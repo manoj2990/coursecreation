@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import BasicInfoStep from "@/components/steps/BasicInfoStep";
 import ContentStep from "@/components/steps/ContentStep";
@@ -10,19 +10,23 @@ import PublishStep from "@/components/steps/PublishStep";
 
 const LOGO_URL = "/logo.png";
 
-const steps = [
-  { id: 1, title: "Basic Info", description: "Course details" },
-  { id: 2, title: "Content", description: "Topics & Subtopics" },
-  { id: 3, title: "Assessments", description: "Questions & Tests" },
-  { id: 4, title: "Publish", description: "Review & Publish" },
-];
-
-const CourseCreationWizard = () => {
+const CourseCreationWizard = ({authToken, setAuthToken, setIsAuthenticated}) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [courseData, setCourseData] = useState({});
 
-  const authToken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY";
+  const handleLogout = () => {
+    setAuthToken(null);
+    setIsAuthenticated(false);
+   
+    localStorage.clear();
+  };
+
+  const steps = [
+    { id: 1, title: "Basic Info", description: "Course details" },
+    { id: 2, title: "Content", description: "Topics & Subtopics" },
+    { id: 3, title: "Assessments", description: "Questions & Tests" },
+    { id: 4, title: "Publish", description: "Review & Publish" },
+  ];
 
   const updateCourseData = (stepData) => {
     setCourseData((prev) => ({ ...prev, ...stepData }));
@@ -93,7 +97,7 @@ const CourseCreationWizard = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-black border-b sticky top-0 z-40">
-        <div className="container mx-auto relative">
+        <div className="container mx-auto relative flex items-center justify-between">
           <div className="flex items-center">
             <img
               src={LOGO_URL}
@@ -104,6 +108,15 @@ const CourseCreationWizard = () => {
               Create New Course
             </h1>
           </div>
+          <Button
+            variant="ghost"
+            className="text-white hover:text-gray-200 hover:bg-gray-800"
+            onClick={handleLogout}
+            title="Log out"
+          >
+            <LogOut className="h-5 w-5 mr-2" />
+            Logout
+          </Button>
         </div>
       </header>
 

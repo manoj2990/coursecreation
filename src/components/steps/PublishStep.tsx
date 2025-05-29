@@ -14,48 +14,30 @@ interface PublishStepProps {
   data: any;
   onUpdate: (data: any) => void;
   onPrev: () => void;
-  authToken:string;
+  authToken: string;
 }
 
-const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => {
+const PublishStep = ({ data, onUpdate, onPrev, authToken }: PublishStepProps) => {
   const [linkedEntities, setLinkedEntities] = useState<any[]>([]);
   const [selectedOrganization, setSelectedOrganization] = useState<string>("");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishedCourse, setPublishedCourse] = useState<any>(null);
+  const [courseLink, setCourseLink] = useState<string>("");
   const { toast } = useToast();
-  // const [authToken] = useState(
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY"
-  // );
 
-  const organizations = [
-    {
-      name: "Kessler, Marks and Botsford",
-      id: "68208700f2b634ae4425598e",
-      departments: [
-        { name: "Toys Department", id: "68208821f2b634ae442559a1" },
-        { name: "Games Department", id: "68208847f2b634ae442559aa" },
-      ],
-    },
-    {
-      name: "Will - Hudson",
-      id: "6820873ef2b634ae44255995",
-      departments: [
-        { name: "Computers Department", id: "6820886ff2b634ae442559b3" },
-      ],
-    },
-  ];
+  const organizations = JSON.parse(localStorage.getItem('organizations') || '[]');
 
   const addOrganization = () => {
     if (!selectedOrganization) return;
 
-    const org = organizations.find((o) => o.id === selectedOrganization);
+    const org = organizations.find((o: any) => o._id === selectedOrganization);
     if (!org) return;
 
     setLinkedEntities((prev) => [
       ...prev,
       {
-        organization: org.id,
+        organization: org._id,
         organizationName: org.name,
         departments: [],
       },
@@ -66,8 +48,8 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
   const addDepartment = (orgIndex: number) => {
     if (!selectedDepartment) return;
 
-    const org = organizations.find((o) => o.id === linkedEntities[orgIndex].organization);
-    const dept = org?.departments.find((d) => d.id === selectedDepartment);
+    const org = organizations.find((o: any) => o._id === linkedEntities[orgIndex].organization);
+    const dept = org?.departments.find((d: any) => d._id === selectedDepartment);
     if (!dept) return;
 
     setLinkedEntities((prev) =>
@@ -75,7 +57,7 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
         index === orgIndex
           ? {
               ...entity,
-              departments: [...entity.departments, { _id: dept.id, name: dept.name }],
+              departments: [...entity.departments, { _id: dept._id, name: dept.name }],
             }
           : entity
       )
@@ -108,10 +90,9 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
         status: "published",
         linked_entities: linkedEntities.map((entity) => ({
           organization: entity.organization,
-          departments: entity.departments.map((dept) => ({ _id: dept._id })),
+          departments: entity.departments.map((dept: any) => ({ _id: dept._id })),
         })),
       };
-      console.log("publish payload-->", payload);
       const response = await fetch("https://workculture.onrender.com/api/v1/courses/publish-course", {
         method: "POST",
         headers: {
@@ -120,13 +101,12 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
         },
         body: JSON.stringify(payload),
       });
-      console.log("publish resp --->", response);
 
       if (response.ok) {
         const result = await response.json();
-        console.log("publish result --->", result);
         const courseData = result.data.course;
         setPublishedCourse(courseData);
+        setCourseLink(result.data.courseLink);
         toast({
           title: "Course Published!",
           description: "Your course has been successfully published and is now available.",
@@ -146,9 +126,9 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
   };
 
   const topics = data.topics || [];
-  const totalSubtopics = topics.reduce((sum, topic) => sum + (topic.subtopics?.length || 0), 0);
+  const totalSubtopics = topics.reduce((sum: number, topic: any) => sum + (topic.subtopics?.length || 0), 0);
   const assessments = data.assessments || [];
-  const totalAssessments = assessments.reduce((sum, sa) => sum + (sa.assessments?.length || 0), 0);
+  const totalAssessments = assessments.reduce((sum: number, sa: any) => sum + (sa.assessments?.length || 0), 0);
 
   return (
     <div className="space-y-6">
@@ -169,20 +149,20 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
               <div className="space-y-1">
                 <Label className="text-sm font-semibold">Linked Organizations:</Label>
                 {publishedCourse.linked_entities?.length > 0 ? (
-                  publishedCourse.linked_entities.map((entity, index) => {
-                    const org = organizations.find((o) => o.id === entity.organization);
+                  publishedCourse.linked_entities.map((entity: any, index: number) => {
+                    const org = organizations.find((o: any) => o._id === entity.organization);
                     return (
                       <div key={index} className="ml-2">
                         <p className="text-sm font-medium">
-                          {org ? `${org.name}(${org.id})` : entity.organization}
+                          {org ? `${org.name}(${org._id})` : entity.organization}
                         </p>
                         <div className="ml-4 space-y-1">
                           {entity.departments?.length > 0 ? (
-                            entity.departments.map((dept, deptIndex) => {
-                              const deptData = org?.departments.find((d) => d.id === dept);
+                            entity.departments.map((dept: any, deptIndex: number) => {
+                              const deptData = org?.departments.find((d: any) => d._id === dept);
                               return (
                                 <p key={deptIndex} className="text-sm">
-                                  - {deptData ? `${deptData.name}(${deptData.id})` : dept}
+                                  - {deptData ? `${deptData.name}(${deptData._id})` : dept}
                                 </p>
                               );
                             })
@@ -201,6 +181,18 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
                 <span className="font-semibold">Status:</span>{" "}
                 <span className="text-green-600">{publishedCourse.status}</span>
               </p>
+              {courseLink && (
+                <div className="mt-4">
+                  <Button
+                    asChild
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    <a href={courseLink} target="_blank" rel="noopener noreferrer">
+                      View Course
+                    </a>
+                  </Button>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -259,7 +251,7 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
                 <Label className="text-sm font-semibold">Skills Covered</Label>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {data.skills?.length > 0 ? (
-                    data.skills.map((skill, index) => (
+                    data.skills.map((skill: string, index: number) => (
                       <Badge key={index} variant="secondary">{skill}</Badge>
                     ))
                   ) : (
@@ -272,7 +264,7 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
                 <Label className="text-sm font-semibold">Instructors</Label>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {data.instructors?.length > 0 ? (
-                    data.instructors.map((instructor, index) => (
+                    data.instructors.map((instructor: string, index: number) => (
                       <Badge key={index} variant="outline">{instructor}</Badge>
                     ))
                   ) : (
@@ -289,12 +281,12 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
               <div>
                 <h4 className="font-semibold mb-3">Course Content Structure</h4>
                 <div className="space-y-3">
-                  {topics.map((topic, index) => (
+                  {topics.map((topic: any, index: number) => (
                     <div key={topic.id || index} className="border rounded-lg p-3">
                       <h5 className="font-medium">{topic.title}</h5>
                       <p className="text-sm text-gray-600 mt-1">{topic.description}</p>
                       <div className="mt-2 space-y-1">
-                        {topic.subtopics?.map((subtopic, subIndex) => (
+                        {topic.subtopics?.map((subtopic: any, subIndex: number) => (
                           <div key={subtopic.id || subIndex} className="ml-4 text-sm">
                             <span className="text-gray-500">•</span> {subtopic.title}
                           </div>
@@ -324,9 +316,9 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
                 <SelectValue placeholder="Select organization" />
               </SelectTrigger>
               <SelectContent>
-                {organizations.map((org) => (
-                  <SelectItem key={org.id} value={org.id}>
-                    {`${org.name}(${org.id})`}
+                {organizations.map((org: any) => (
+                  <SelectItem key={org._id} value={org._id}>
+                    {`${org.name}(${org._id})`}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -336,8 +328,8 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
             </Button>
           </div>
 
-          {linkedEntities.map((entity, orgIndex) => {
-            const org = organizations.find((o) => o.id === entity.organization);
+          {linkedEntities.map((entity: any, orgIndex: number) => {
+            const org = organizations.find((o: any) => o._id === entity.organization);
             return (
               <Card key={orgIndex} className="border-dashed">
                 <CardContent className="p-4">
@@ -360,7 +352,7 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
                   <div className="space-y-2">
                     <Label className="text-sm">Department IDs:</Label>
                     <div className="flex flex-wrap gap-1 mb-2">
-                      {entity.departments.map((dept, deptIndex) => (
+                      {entity.departments.map((dept: any, deptIndex: number) => (
                         <Badge key={deptIndex} variant="outline">
                           {`${dept.name}(${dept._id})`}
                           <button
@@ -378,9 +370,9 @@ const PublishStep = ({ data, onUpdate, onPrev,authToken }: PublishStepProps) => 
                           <SelectValue placeholder="Select department" />
                         </SelectTrigger>
                         <SelectContent>
-                          {org?.departments.map((dept) => (
-                            <SelectItem key={dept.id} value={dept.id}>
-                              {`${dept.name}(${dept.id})`}
+                          {org?.departments.map((dept: any) => (
+                            <SelectItem key={dept._id} value={dept._id}>
+                              {`${dept.name}(${dept._id})`}
                             </SelectItem>
                           ))}
                         </SelectContent>

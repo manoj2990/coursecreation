@@ -32,10 +32,10 @@ const BasicInfoStep = ({ data, onUpdate, onNext, authToken }: BasicInfoStepProps
   
   const [newSkill, setNewSkill] = useState("");
   const [newInstructor, setNewInstructor] = useState("");
-  const [isEditing, setIsEditing] = useState(!data.id); // Edit mode if no ID (new course)
+  const [isEditing, setIsEditing] = useState(!data.id); 
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
-  // const [authToken] = useState("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY");
+
 
   // Update form data when props change
   useEffect(() => {

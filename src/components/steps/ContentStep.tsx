@@ -495,9 +495,7 @@ const ContentStep = ({ data, onUpdate, onNext, onPrev,authToken }: ContentStepPr
     isCreating: false,
   });
   const [error, setError] = useState<string | null>(null);
-  // const [authToken] = useState(
-  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY"
-  // );
+
 
   // Update parent data when topics change
   useEffect(() => {
