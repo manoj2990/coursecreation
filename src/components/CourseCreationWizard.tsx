@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,9 @@ import BasicInfoStep from "@/components/steps/BasicInfoStep";
 import ContentStep from "@/components/steps/ContentStep";
 import AssessmentStep from "@/components/steps/AssessmentStep";
 import PublishStep from "@/components/steps/PublishStep";
- 
+
+const LOGO_URL = "/logo.png";
+
 const steps = [
   { id: 1, title: "Basic Info", description: "Course details" },
   { id: 2, title: "Content", description: "Topics & Subtopics" },
@@ -18,10 +19,13 @@ const steps = [
 
 const CourseCreationWizard = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [courseData, setCourseData] = useState<any>({});
+  const [courseData, setCourseData] = useState({});
 
-  const updateCourseData = (stepData: any) => {
-    setCourseData(prev => ({ ...prev, ...stepData }));
+  const authToken =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY";
+
+  const updateCourseData = (stepData) => {
+    setCourseData((prev) => ({ ...prev, ...stepData }));
   };
 
   const nextStep = () => {
@@ -36,20 +40,50 @@ const CourseCreationWizard = () => {
     }
   };
 
-  const goToStep = (stepId: number) => {
+  const goToStep = (stepId) => {
     setCurrentStep(stepId);
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <BasicInfoStep data={courseData} onUpdate={updateCourseData} onNext={nextStep} />;
+        return (
+          <BasicInfoStep
+            data={courseData}
+            onUpdate={updateCourseData}
+            onNext={nextStep}
+            authToken={authToken}
+          />
+        );
       case 2:
-        return <ContentStep data={courseData} onUpdate={updateCourseData} onNext={nextStep} onPrev={prevStep} />;
+        return (
+          <ContentStep
+            data={courseData}
+            onUpdate={updateCourseData}
+            onNext={nextStep}
+            onPrev={prevStep}
+            authToken={authToken}
+          />
+        );
       case 3:
-        return <AssessmentStep data={courseData} onUpdate={updateCourseData} onNext={nextStep} onPrev={prevStep} />;
+        return (
+          <AssessmentStep
+            data={courseData}
+            onUpdate={updateCourseData}
+            onNext={nextStep}
+            onPrev={prevStep}
+            authToken={authToken}
+          />
+        );
       case 4:
-        return <PublishStep data={courseData} onUpdate={updateCourseData} onPrev={prevStep} />;
+        return (
+          <PublishStep
+            data={courseData}
+            onUpdate={updateCourseData}
+            onPrev={prevStep}
+            authToken={authToken}
+          />
+        );
       default:
         return null;
     }
@@ -58,10 +92,17 @@ const CourseCreationWizard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Create New Course</h1>
+      <header className="bg-black border-b sticky top-0 z-40">
+        <div className="container mx-auto relative">
+          <div className="flex items-center">
+            <img
+              src={LOGO_URL}
+              alt="Company Logo"
+              className="h-20 w-auto"
+            />
+            <h1 className="text-2xl font-bold text-white absolute left-1/2 transform -translate-x-1/2">
+              Create New Course
+            </h1>
           </div>
         </div>
       </header>
@@ -105,9 +146,7 @@ const CourseCreationWizard = () => {
 
       {/* Step Content */}
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {renderStep()}
-        </div>
+        <div className="max-w-4xl mx-auto">{renderStep()}</div>
       </div>
     </div>
   );

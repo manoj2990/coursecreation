@@ -1,4 +1,4 @@
-// Updated BasicInfoStep Component
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,9 +12,10 @@ interface BasicInfoStepProps {
   data: any;
   onUpdate: (data: any) => void;
   onNext: () => void;
+  authToken: string;
 }
 
-const BasicInfoStep = ({ data, onUpdate, onNext }: BasicInfoStepProps) => {
+const BasicInfoStep = ({ data, onUpdate, onNext, authToken }: BasicInfoStepProps) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -34,7 +35,7 @@ const BasicInfoStep = ({ data, onUpdate, onNext }: BasicInfoStepProps) => {
   const [isEditing, setIsEditing] = useState(!data.id); // Edit mode if no ID (new course)
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
-  const [authToken, setAuthToken] = useState("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY"); // Replace with actual token
+  // const [authToken] = useState("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2ODIwNzllZmE2NzgyMzlmNjA1NzRjNTMiLCJlbWFpbCI6ImFkbWluTmVsc19CYXVtYmFjaDg2QGV4YW1wbGUuY29tIiwiYWNjb3VudFR5cGUiOiJhZG1pbiIsImlhdCI6MTc0ODM0NTEwMCwiZXhwIjoxNzQ4OTQ5OTAwfQ.p4mO3YDtBeWC677MGTX_KppJP8O9Jan_cj0imI5f9sY");
 
   // Update form data when props change
   useEffect(() => {
